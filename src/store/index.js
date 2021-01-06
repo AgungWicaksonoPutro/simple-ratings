@@ -51,6 +51,18 @@ export default new Vuex.Store({
             reject(err)
           })
       })
+    },
+    editReview (context, payload) {
+      console.log(payload)
+      return new Promise((resolve, reject) => {
+        axios.patch(process.env.VUE_APP_API_URL + '/review/' + payload.id, payload.data)
+          .then((res) => {
+            resolve(res.data.result)
+          })
+          .catch((err) => {
+            reject(err)
+          })
+      })
     }
   },
   getters: {

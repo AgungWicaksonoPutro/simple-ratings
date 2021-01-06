@@ -5,7 +5,7 @@
                 <img class="w-full h-full object-cover rounded-full" src="https://img2.pngdownload.id/20180521/ocp/kisspng-computer-icons-user-profile-avatar-french-people-5b0365e4f1ce65.9760504415269493489905.jpg" alt="">
             </div>
         </div>
-        <div class="w-full mx-1 text-left px-2">
+        <div v-show="set" id="set" class="w-full mx-1 text-left px-2">
             <div class="name text-lg">
                 <h5>{{data.name}}</h5>
             </div>
@@ -24,13 +24,25 @@
                 </div>
             </div>
         </div>
+        <div v-show="update" id="update" class="w-full mx-1 text-left px-2">
+          <form>
+            <inputStarRating v-model="star_rating"/>
+            <textarea v-model="comment" class=" bg-gray-300 w-full py-3 px-5 resize-none placeholder-black focus:outline-none" name="comment" id="comment" cols="30" rows="4" :placeholder="comment"></textarea>
+            <div class="btn-group flex justify-between items-end">
+                <input multiple ref="files" @change="handleImage"  class="hidden" type="file" name="img" id="img" accept="image/*">
+                <label class="bg-gray-300 w-36 h-10 flex justify-center items-center" for="img">{{images ? 'Ganti Gambar' : 'Upload Gambar'}}</label>
+                <button @click.prevent="updateReview(data._id)" class="button w-36 h-10 bg-gray-300" id="button" type="button">Kirim</button>
+            </div>
+          </form>
+        </div>
         <div class="w-14">
-            <button @click="toogle ()" class="text-gray-500 font-medium text-3xl hover:text-gray-800 focus:outline-none"><b-icon icon="three-dots"></b-icon></button>
+            <button v-show="update" @click="toggleUpdate()" class="text-gray-500 font-medium text-3xl hover:text-gray-800 focus:outline-none"><b-icon icon="x-circle"></b-icon></button>
+            <button v-show="set" @click="toogle ()" class="text-gray-500 font-medium text-3xl hover:text-gray-800 focus:outline-none"><b-icon icon="three-dots"></b-icon></button>
         </div>
         <transition name="dropdown">
             <div v-show="show" v-click-outside="hide" class="drop-button absolute top-11 right-5 bg-gray-400 z-10 w-32 box-border overflow-hidden">
                 <ul class="nav-links text-left">
-                    <li class="nav-link font-bold hover:bg-gray-300 px-4 pt-2"><a href="#">Edit</a></li>
+                    <li class="nav-link font-bold hover:bg-gray-300 px-4 pt-2"><a class="w-full" @click="setUpdate(data)" href="javascript:void(0)">Edit</a></li>
                     <li class="nav-link font-bold hover:bg-gray-300 px-4 pb-2"><a class="w-full" @click="delReview(data._id)" href="javascript:void(0)">Delete</a></li>
                 </ul>
             </div>
@@ -41,21 +53,30 @@
 <script>
 import moment from 'moment'
 import ClickOutside from 'vue-click-outside'
+import _ from 'lodash'
 import starRatings from './starRatings'
+import inputStarRating from './inputStarRatings'
 import { mapActions } from 'vuex'
 export default {
   name: 'viewRatings',
   props: ['data'],
   data () {
     return {
-      show: false
+      show: false,
+      update: false,
+      set: true,
+      comment: '',
+      star_rating: 0,
+      images: [],
+      name: ''
     }
   },
   components: {
-    starRatings
+    starRatings,
+    inputStarRating
   },
   methods: {
-    ...mapActions(['getAllReview', 'deleteReview']),
+    ...mapActions(['getAllReview', 'deleteReview', 'editReview']),
     toogle () {
       this.show = !this.show
     },
@@ -70,6 +91,47 @@ export default {
       this.deleteReview(id)
         .then((res) => {
           this.getAllReview()
+          this.hide()
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    },
+    toggleUpdate () {
+      this.set = !this.set
+      this.update = !this.update
+      this.show = false
+    },
+    setUpdate (data) {
+      this.toggleUpdate()
+      this.comment = data.review_comment
+      this.star_rating = data.review_star
+      this.images = data.image
+      this.name = data.name
+    },
+    handleImage (e) {
+      console.log('jalan')
+      const imgs = this.$refs.files.files
+      this.images = [...this.images, ...imgs]
+    },
+    updateReview (id) {
+      const fd = new FormData()
+      fd.append('name', this.name)
+      fd.append('review_comment', this.comment)
+      fd.append('review_star', this.star_rating)
+      if (this.images.length >= 1) {
+        _.forEach(this.images, file => {
+          fd.append('images', file)
+        })
+      }
+      const containerData = {
+        id: id,
+        data: fd
+      }
+      this.editReview(containerData)
+        .then((res) => {
+          this.getAllReview()
+          this.toggleUpdate()
         })
         .catch((err) => {
           console.log(err)
@@ -96,16 +158,16 @@ export default {
      opacity: 0;
 }
 .dropdown-enter {
-     transform: translateX(31px);
+     transform: translateX(-31px);
 }
 .dropdown-leave-active {
-     transform: translateX(-31px);
+     transform: translateX(31px);
 }
 .dropdown-enter-active, .dropdown-leave-active {
      transition: all 1s;
 }
 .dropdown-enter, .dropdown-leave-to {
      opacity: 0;
-     transform: translateY(30px);
+     transform: translateY(-30px);
 }
 </style>
