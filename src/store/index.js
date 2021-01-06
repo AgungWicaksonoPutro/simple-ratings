@@ -27,11 +27,35 @@ export default new Vuex.Store({
             reject(err)
           })
       })
+    },
+    insertReview (context, payload) {
+      console.log(payload)
+      return new Promise((resolve, reject) => {
+        axios.post(process.env.VUE_APP_API_URL + '/review/', payload)
+          .then((res) => {
+            resolve(res.data.result)
+          })
+          .catch((err) => {
+            reject(err)
+          })
+      })
+    },
+    deleteReview (context, payload) {
+      console.log(payload)
+      return new Promise((resolve, reject) => {
+        axios.delete(process.env.VUE_APP_API_URL + '/review/' + payload)
+          .then((res) => {
+            resolve(res.data.result)
+          })
+          .catch((err) => {
+            reject(err)
+          })
+      })
     }
   },
   getters: {
     getAllReviews (state) {
-      return state.reviews
+      return state.reviews.reverse()
     }
   }
 })

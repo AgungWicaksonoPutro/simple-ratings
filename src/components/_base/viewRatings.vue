@@ -19,8 +19,8 @@
                 <p>{{data.review_comment}}</p>
             </div>
             <div v-if="data.image.length" class="img flex flex-wrap">
-                <div class="img-container w-44 h-32 m-1">
-                    <img class=" w-full h-full object-cover rounded-sm" src="https://topcareer.id/wp-content/uploads/2019/08/70991566060841_sabtu_171.jpg" alt="">
+                <div class="img-container w-32 h-32 m-1" v-for="(image, index) in data.image" :key="index">
+                    <img class=" w-full h-full object-contain rounded-sm" :src="`data:image/png;base64,${image.b64}`" alt="">
                 </div>
             </div>
         </div>
@@ -31,7 +31,7 @@
             <div v-show="show" v-click-outside="hide" class="drop-button absolute top-11 right-5 bg-gray-400 z-10 w-32 box-border overflow-hidden">
                 <ul class="nav-links text-left">
                     <li class="nav-link font-bold hover:bg-gray-300 px-4 pt-2"><a href="#">Edit</a></li>
-                    <li class="nav-link font-bold hover:bg-gray-300 px-4 pb-2"><a href="#">Delete</a></li>
+                    <li class="nav-link font-bold hover:bg-gray-300 px-4 pb-2"><a class="w-full" @click="delReview(data._id)" href="javascript:void(0)">Delete</a></li>
                 </ul>
             </div>
         </transition>
@@ -42,19 +42,20 @@
 import moment from 'moment'
 import ClickOutside from 'vue-click-outside'
 import starRatings from './starRatings'
+import { mapActions } from 'vuex'
 export default {
   name: 'viewRatings',
   props: ['data'],
   data () {
     return {
-      show: false,
-      rating: 3
+      show: false
     }
   },
   components: {
     starRatings
   },
   methods: {
+    ...mapActions(['getAllReview', 'deleteReview']),
     toogle () {
       this.show = !this.show
     },
@@ -64,6 +65,15 @@ export default {
     getDate (a) {
       moment.locale('id')
       return moment(a).format('LL')
+    },
+    delReview (id) {
+      this.deleteReview(id)
+        .then((res) => {
+          this.getAllReview()
+        })
+        .catch((err) => {
+          console.log(err)
+        })
     }
   },
   mounted () {
