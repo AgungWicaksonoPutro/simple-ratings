@@ -1,5 +1,5 @@
 <template>
-  <div class="container lg:w-4/6 md:w-4/6 xs:w-9/12 p-3 mx-auto">
+  <div class="container lg:w-3/6 md:w-4/6 xs:w-9/12 p-3 mx-auto">
     <inputRatings/>
     <hr>
     <div class="container" v-for="(review, index) in getAllReviews" :key="index">

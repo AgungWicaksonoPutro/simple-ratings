@@ -79,14 +79,31 @@ export default {
       return moment(a).format('LL')
     },
     delReview (id) {
-      this.deleteReview(id)
-        .then((res) => {
-          this.getAllReview()
-          this.hide()
-        })
-        .catch((err) => {
-          console.log(err)
-        })
+      this.$swal({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.deleteReview(id)
+            .then((res) => {
+              this.$swal(
+                'Deleted!',
+                'Your file has been deleted.',
+                'success'
+              )
+              this.hide()
+              this.getAllReview()
+            })
+            .catch((err) => {
+              console.log(err)
+            })
+        }
+      })
     },
     toggleUpdate () {
       this.update = !this.update
@@ -140,6 +157,7 @@ export default {
         .then((res) => {
           this.getAllReview()
           this.toggleUpdate()
+          this.$swal({ icon: 'success', title: 'Review edited' })
         })
         .catch((err) => {
           console.log(err)

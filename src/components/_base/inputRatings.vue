@@ -13,6 +13,10 @@
                 <button @click.prevent="sendReview" class="button w-36 h-10 bg-gray-300 my-2" id="button" type="button">Kirim</button>
             </div>
       </div>
+      <div :class="[index %2 == 0 ? 'bg-red-200' : 'bg-red-300']" class="w-full flex p-1 text-left" v-for="(file, index) in images" :key="index">
+          <div class="w-full">{{file.name}}</div>
+          <div class="w-24"><button @click.prevent="images.splice(index, 1)">Delete</button></div>
+      </div>
     <div v-show="show" class="bg-yellow-200 text-red-400 my-3 p-2">{{message}}</div>
     </form>
 </template>
@@ -66,6 +70,7 @@ export default {
           .then((res) => {
             this.getAllReview()
             this.cleanform()
+            this.$swal({ icon: 'success', title: 'Thanks for the review' })
           })
           .catch((err) => {
             console.log(err)
