@@ -5,7 +5,7 @@
                 <img class="w-full h-full object-cover rounded-full" src="https://img2.pngdownload.id/20180521/ocp/kisspng-computer-icons-user-profile-avatar-french-people-5b0365e4f1ce65.9760504415269493489905.jpg" alt="">
             </div>
         </div>
-        <div v-show="set" id="set" class="w-full mx-1 text-left px-2">
+        <div id="set" class="w-full mx-1 text-left px-2">
             <div class="name text-lg">
                 <h5>{{data.name}}</h5>
             </div>
@@ -19,17 +19,13 @@
                 <p>{{data.review_comment}}</p>
             </div>
             <div v-if="data.image.length" class="img flex flex-wrap">
-                <div class="img-container w-32 h-32 m-1" v-for="(image, index) in data.image" :key="index">
-                    <img class=" w-full h-full object-contain rounded-sm" :src="`data:image/png;base64,${image.b64}`" alt="">
+                <div class="img-container w-40 h-32 m-1" v-for="(image, index) in data.image" :key="index">
+                    <img class=" w-full h-full object-cover rounded-sm" :src="`data:image/png;base64,${image.b64}`" alt="">
                 </div>
             </div>
         </div>
-        <div v-show="update" id="update" class="w-full mx-1 text-left px-2">
-          <inputRatings :updateData="setUpdateData"/>
-        </div>
         <div class="w-14">
-            <button v-show="update" @click="toggleUpdate()" class="text-gray-500 font-medium text-3xl hover:text-gray-800 focus:outline-none"><b-icon icon="x-circle"></b-icon></button>
-            <button v-show="set" @click="toogle ()" class="text-gray-500 font-medium text-3xl hover:text-gray-800 focus:outline-none"><b-icon icon="three-dots"></b-icon></button>
+            <button @click="toogle()" class="text-gray-500 font-medium text-3xl hover:text-gray-800 focus:outline-none"><b-icon icon="three-dots"></b-icon></button>
         </div>
         <transition name="dropdown">
             <div v-show="show" v-click-outside="hide" class="drop-button absolute top-11 right-5 bg-gray-400 z-10 w-32 box-border overflow-hidden">
@@ -39,27 +35,28 @@
                 </ul>
             </div>
         </transition>
+        <modal :data="setUpdateData" v-show="update" @handle-update="updateReview" @event-close="toggleUpdate"/>
     </div>
 </template>
 
 <script>
+import _ from 'lodash'
+import modal from './modal'
 import moment from 'moment'
 import ClickOutside from 'vue-click-outside'
 import starRatings from './starRatings'
-import inputRatings from './inputRatings'
 import { mapActions } from 'vuex'
 export default {
   name: 'viewRatings',
   components: {
     starRatings,
-    inputRatings
+    modal
   },
   props: ['data'],
   data () {
     return {
       show: false,
       update: false,
-      set: true,
       setUpdateData: {
         comment: '',
         star_rating: 0,
@@ -92,7 +89,6 @@ export default {
         })
     },
     toggleUpdate () {
-      this.set = !this.set
       this.update = !this.update
       this.show = false
     },
@@ -103,6 +99,28 @@ export default {
       this.setUpdateData.images = data.image
       this.setUpdateData.id = data._id
       this.toggleUpdate()
+    },
+    updateReview () {
+      const id = this.setUpdateData.id
+      const fd = new FormData()
+      fd.append('name', this.setUpdateData.name)
+      fd.append('review_comment', this.setUpdateData.comment)
+      fd.append('review_star', this.setUpdateData.star_rating)
+      _.forEach(this.setUpdateData.images, file => {
+        fd.append('images', file)
+      })
+      const containerData = {
+        id: id,
+        data: fd
+      }
+      this.editReview(containerData)
+        .then((res) => {
+          this.getAllReview()
+          this.toggleUpdate()
+        })
+        .catch((err) => {
+          console.log(err)
+        })
     }
   },
   mounted () {

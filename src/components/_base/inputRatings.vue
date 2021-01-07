@@ -2,19 +2,18 @@
     <form enctype="multipart/form-data">
       <div class="container my-5">
         <div class="container mb-2 flex justify-between items-end">
-            <h1 :class="[updateData ? 'hidden' : 'text-left']">Review</h1>
-            <inputStarRatings v-if="updateData" v-model="updateData.star_rating"/>
-            <inputStarRatings v-else v-model="review_star"/>
+            <h1 class="text-left">Review</h1>
+            <inputStarRatings v-model="review_star"/>
         </div>
-            <input v-model="name" :class="[updateData ? 'hidden' : 'bg-gray-300 w-full py-3 px-5 placeholder-black focus:outline-none mb-2']" type="text" name="name" id="name" placeholder="Tulis Nama Kamu">
-            <textarea v-if="updateData" v-model="updateData.comment" class=" bg-gray-300 w-full py-3 px-5 resize-none placeholder-black focus:outline-none" name="comment" id="comment" cols="30" rows="4" :placeholder="`${updateData.comment}`"></textarea>
-            <textarea v-else v-model="comment" class=" bg-gray-300 w-full py-3 px-5 resize-none placeholder-black focus:outline-none" name="comment" id="comment" cols="30" rows="4" placeholder="Tulis Review Terbaikmu"></textarea>
+            <input v-model="name" class="bg-gray-300 w-full py-3 px-5 placeholder-black focus:outline-none mb-2" type="text" name="name" id="name" placeholder="Tulis Nama Kamu">
+            <textarea v-model="comment" class=" bg-gray-300 w-full py-3 px-5 resize-none placeholder-black focus:outline-none" name="comment" id="comment" cols="30" rows="4" placeholder="Tulis Review Terbaikmu"></textarea>
             <div class="btn-group flex justify-between items-end">
                 <input multiple ref="files" @change="handleImage" class="hidden" type="file" name="img" id="img" accept="image/*">
                 <label class="bg-gray-300 w-36 h-10 flex justify-center items-center" for="img">Upload Gambar</label>
-                <button @click.prevent="handleEvent" class="button w-36 h-10 bg-gray-300" id="button" type="button">{{ updateData ? 'Update':'Kirim'}}</button>
+                <button @click.prevent="sendReview" class="button w-36 h-10 bg-gray-300" id="button" type="button">Kirim</button>
             </div>
       </div>
+    <div v-show="show" class="bg-yellow-200 text-red-400 my-3 p-2">{{message}}</div>
     </form>
 </template>
 
@@ -27,6 +26,8 @@ export default {
   props: ['updateData'],
   data () {
     return {
+      show: false,
+      message: '',
       review_star: 0,
       name: '',
       comment: '',
@@ -34,13 +35,16 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['insertReview', 'getAllReview', 'editReview']),
+    ...mapActions(['insertReview', 'getAllReview']),
     handleImage (e) {
       const imgs = this.$refs.files.files
-      this.images = [...this.images, ...imgs]
-    },
-    handleEvent () {
-      this.updateData ? this.updateReview(this.updateData.id) : this.sendReview()
+      if (imgs.length > 4) {
+        this.show = !this.show
+        this.message = 'Maksimal upload gambar 4'
+      } else {
+        this.show = !this.show
+        this.data.images = [...this.images, ...imgs]
+      }
     },
     cleanform () {
       this.review_star = 0
@@ -56,36 +60,20 @@ export default {
       _.forEach(this.images, file => {
         fd.append('images', file)
       })
-      this.insertReview(fd)
-        .then((res) => {
-          this.getAllReview()
-          this.cleanform()
-        })
-        .catch((err) => {
-          console.log(err)
-        })
-    },
-    updateReview (id) {
-      console.log(this.images)
-      const fd = new FormData()
-      fd.append('name', this.updateData.name)
-      fd.append('review_comment', this.updateData.comment)
-      fd.append('review_star', this.updateData.star_rating)
-      _.forEach(this.images, file => {
-        fd.append('images', file)
-      })
-      const containerData = {
-        id: id,
-        data: fd
+      if (this.name !== '' && this.comment !== '' && this.review_star !== 0) {
+        this.show = false
+        this.insertReview(fd)
+          .then((res) => {
+            this.getAllReview()
+            this.cleanform()
+          })
+          .catch((err) => {
+            console.log(err)
+          })
+      } else {
+        this.show = !this.show
+        this.message = 'Pastikan anda sudah mengisi name, comment dan bintang'
       }
-      this.editReview(containerData)
-        .then((res) => {
-          this.getAllReview()
-          this.cleanform()
-        })
-        .catch((err) => {
-          console.log(err)
-        })
     }
   },
   computed: {
