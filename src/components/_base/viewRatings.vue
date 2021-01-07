@@ -1,11 +1,11 @@
 <template>
-    <div class="container bg-gray-100 flex flex-wrap rounded-md my-3 p-3 relative">
+    <div class="container bg-gray-100 flex flex-wrap justify-between rounded-md my-3 p-3 relative">
         <div class="">
-            <div class="w-12 h-12 rounded-full mx-2">
+            <div class="w-12 h-12 rounded-full">
                 <img class="w-full h-full object-cover rounded-full" src="https://img2.pngdownload.id/20180521/ocp/kisspng-computer-icons-user-profile-avatar-french-people-5b0365e4f1ce65.9760504415269493489905.jpg" alt="">
             </div>
         </div>
-        <div id="set" class="mx-1 text-left px-2">
+        <div id="set" class="w-3/4 text-left px-2">
             <div class="name text-lg">
                 <h5>{{data.name}}</h5>
             </div>
