@@ -42,8 +42,8 @@ export default {
         this.show = !this.show
         this.message = 'Maksimal upload gambar 4'
       } else {
-        this.show = !this.show
-        this.data.images = [...this.images, ...imgs]
+        this.show = false
+        this.images = [...this.images, ...imgs]
       }
     },
     cleanform () {

@@ -93,12 +93,35 @@ export default {
       this.show = false
     },
     setUpdate (data) {
+      const tabulasiData = []
       this.setUpdateData.comment = data.review_comment
       this.setUpdateData.star_rating = data.review_star
       this.setUpdateData.name = data.name
-      this.setUpdateData.images = data.image
       this.setUpdateData.id = data._id
+      this.setUpdateData.images = data.image
+      this.setUpdateData.images.map((a, index) => {
+        const url = `data:image/jpeg;base64,${a.b64}`
+        const filename = `image${index}.jpeg`
+        this.convertFile(url, filename, 'image/jpeg')
+          .then((res) => {
+            const isReady = tabulasiData.find(a => {
+              console.log(a.name)
+              return a.name === res.name
+            })
+            if (!isReady) {
+              tabulasiData.push(res)
+            }
+          })
+      })
+      this.setUpdateData.images = tabulasiData
       this.toggleUpdate()
+    },
+    convertFile (url, filename, mimeType) {
+      mimeType = mimeType || (url.match(/^data:([^;]+);/) || '')[1]
+      return (fetch(url)
+        .then(function (res) { return res.arrayBuffer() })
+        .then(function (buf) { return new File([buf], filename, { type: mimeType }) })
+      )
     },
     updateReview () {
       const id = this.setUpdateData.id

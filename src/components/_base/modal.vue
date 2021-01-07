@@ -49,7 +49,7 @@ export default {
         this.show = !this.show
         this.message = 'Maksimal upload gambar 4'
       } else {
-        this.show = !this.show
+        this.show = false
         this.data.images = [...this.data.images, ...imgs]
       }
     }
