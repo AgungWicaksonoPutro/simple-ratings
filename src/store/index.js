@@ -57,6 +57,7 @@ export default new Vuex.Store({
       return new Promise((resolve, reject) => {
         axios.patch(process.env.VUE_APP_API_URL + '/review/' + payload.id, payload.data)
           .then((res) => {
+            console.log(res.data)
             resolve(res.data.result)
           })
           .catch((err) => {
