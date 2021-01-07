@@ -1,16 +1,16 @@
 <template>
     <form enctype="multipart/form-data">
-      <div class="container my-5">
-        <div class="container mb-2 flex justify-between items-end">
-            <h1 class="text-left">Review</h1>
+      <div class="w-full my-5">
+        <div class="mb-2 flex justify-between items-end flex-wrap">
+            <div class="title text-left text-7xl">Review</div>
             <inputStarRatings v-model="review_star"/>
         </div>
             <input v-model="name" class="bg-gray-300 w-full py-3 px-5 placeholder-black focus:outline-none mb-2" type="text" name="name" id="name" placeholder="Tulis Nama Kamu">
             <textarea v-model="comment" class=" bg-gray-300 w-full py-3 px-5 resize-none placeholder-black focus:outline-none" name="comment" id="comment" cols="30" rows="4" placeholder="Tulis Review Terbaikmu"></textarea>
-            <div class="btn-group flex justify-between items-end">
+            <div class="btn-group flex justify-between items-end flex-wrap">
                 <input multiple ref="files" @change="handleImage" class="hidden" type="file" name="img" id="img" accept="image/*">
-                <label class="bg-gray-300 w-36 h-10 flex justify-center items-center" for="img">Upload Gambar</label>
-                <button @click.prevent="sendReview" class="button w-36 h-10 bg-gray-300" id="button" type="button">Kirim</button>
+                <label class="bg-gray-300 w-36 h-10 flex justify-center items-center my-2" for="img">Upload Gambar</label>
+                <button @click.prevent="sendReview" class="button w-36 h-10 bg-gray-300 my-2" id="button" type="button">Kirim</button>
             </div>
       </div>
     <div v-show="show" class="bg-yellow-200 text-red-400 my-3 p-2">{{message}}</div>
