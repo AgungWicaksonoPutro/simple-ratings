@@ -6,11 +6,16 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    reviews: []
+    reviews: [],
+    loader: true
   },
   mutations: {
     setReviews (state, payload) {
       state.reviews = payload
+    },
+    setLoader (state, payload) {
+      console.log(payload)
+      state.loader = payload
     }
   },
   actions: {
@@ -18,9 +23,11 @@ export default new Vuex.Store({
       return new Promise((resolve, reject) => {
         axios.get(process.env.VUE_APP_API_URL + '/review/')
           .then((res) => {
-            console.log(res.data)
             context.commit('setReviews', res.data.data)
-            resolve(res.data)
+            resolve(res.data.data)
+          })
+          .then((res) => {
+            context.commit('setLoader', false)
           })
           .catch((err) => {
             console.log(err)
@@ -69,6 +76,9 @@ export default new Vuex.Store({
   getters: {
     getAllReviews (state) {
       return state.reviews.reverse()
+    },
+    getLoader (state) {
+      return state.loader
     }
   }
 })
