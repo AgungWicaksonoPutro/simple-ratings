@@ -3,6 +3,8 @@
   <h1 align="center">Simple Review</h1>
 
   <p align="center">
+    <a href="https://simple-rating.herokuapp.com/">Demo</a>
+    ·
     <a href="https://github.com/AgungWicaksonoPutro/simple-ratings/issues">Report Bug</a>
     ·
     <a href="https://github.com/AgungWicaksonoPutro/simple-ratings/issues">Request Feature</a>
